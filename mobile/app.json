@@ -1,0 +1,60 @@
+{
+  "expo": {
+    "name": "Nikkah Connect",
+    "slug": "nikkah-connect",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#db2777"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.nikkahconnect.app",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Used to take profile photos.",
+        "NSPhotoLibraryUsageDescription": "Used to upload profile photos."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#db2777"
+      },
+      "package": "com.nikkahconnect.app",
+      "permissions": [
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "CAMERA"
+      ]
+    },
+    "web": {
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-font",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow Nikkah Connect to access your photos.",
+          "cameraPermission": "Allow Nikkah Connect to use your camera."
+        }
+      ]
+    ],
+    "scheme": "nikkahconnect",
+    "extra": {
+      "firebaseApiKey":            "",
+      "firebaseAuthDomain":        "",
+      "firebaseProjectId":         "",
+      "firebaseStorageBucket":     "",
+      "firebaseMessagingSenderId": "",
+      "firebaseAppId":             "",
+      "googleWebClientId":         ""
+    }
+  }
+}

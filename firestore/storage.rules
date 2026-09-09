@@ -1,0 +1,13 @@
+rules_version = '2';
+
+// Firebase Storage is not used in this project.
+// Photos are stored on Cloudinary (free tier, no billing required).
+// All Storage access is denied by default.
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
