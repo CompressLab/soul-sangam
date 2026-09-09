@@ -1,1 +1,1 @@
-"deploy" 
+"retrigger" 
