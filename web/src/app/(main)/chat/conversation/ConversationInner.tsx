@@ -53,9 +53,16 @@ export default function ConversationInner() {
       collection(db, "conversations", convId, "messages"),
       orderBy("createdAt", "asc")
     );
-    return onSnapshot(q, (snap) => {
-      setMessages(snap.docs.map((d) => ({ id: d.id, ...d.data() } as Message)));
-    });
+    return onSnapshot(
+      q,
+      (snap) => {
+        setMessages(snap.docs.map((d) => ({ id: d.id, ...d.data() } as Message)));
+      },
+      (err) => {
+        console.error("Messages onSnapshot error:", err);
+        toast.error("Failed to load messages.");
+      }
+    );
   }, [convId]);
 
   useEffect(() => {

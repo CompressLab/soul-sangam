@@ -50,26 +50,31 @@ export default function EditProfilePage() {
 
   useEffect(() => {
     if (!user) return;
-    getDoc(doc(db, "users", user.uid)).then((snap) => {
-      if (!snap.exists()) return;
-      const p = snap.data() as UserProfile;
-      setPhotos(p.photos ?? []);
-      reset({
-        displayName:    p.displayName,
-        bio:            p.bio,
-        occupation:     p.occupation,
-        annualIncome:   p.annualIncome ?? "",
-        hobbies:        p.hobbies?.join(", ") ?? "",
-        city:           p.location.city,
-        state:          p.location.state,
-        country:        p.location.country,
-        profileVisible: p.profileVisible,
-        photosBlurred:  p.photosBlurred,
-        prefAgeMin:     p.preferences?.ageMin ?? 22,
-        prefAgeMax:     p.preferences?.ageMax ?? 40,
+    getDoc(doc(db, "users", user.uid))
+      .then((snap) => {
+        if (!snap.exists()) { setLoading(false); return; }
+        const p = snap.data() as UserProfile;
+        setPhotos(p.photos ?? []);
+        reset({
+          displayName:    p.displayName,
+          bio:            p.bio,
+          occupation:     p.occupation,
+          annualIncome:   p.annualIncome ?? "",
+          hobbies:        p.hobbies?.join(", ") ?? "",
+          city:           p.location?.city ?? "",
+          state:          p.location?.state ?? "",
+          country:        p.location?.country ?? "",
+          profileVisible: p.profileVisible,
+          photosBlurred:  p.photosBlurred,
+          prefAgeMin:     p.preferences?.ageMin ?? 22,
+          prefAgeMax:     p.preferences?.ageMax ?? 40,
+        });
+        setLoading(false);
+      })
+      .catch(() => {
+        toast.error("Failed to load profile. Please refresh.");
+        setLoading(false);
       });
-      setLoading(false);
-    });
   }, [user, reset]);
 
   async function onSubmit(data: FormData) {

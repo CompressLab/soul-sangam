@@ -29,19 +29,36 @@ export default function ChatListPage() {
       orderBy("lastMessageAt", "desc")
     );
 
-    const unsub = onSnapshot(q, async (snap) => {
-      const docs = snap.docs.map((d) => ({ id: d.id, ...d.data() } as Conversation));
-      const enriched: ConvWithProfile[] = await Promise.all(
-        docs.map(async (conv) => {
-          const otherUid = conv.participants.find((p) => p !== user.uid);
-          if (!otherUid) return { ...conv, otherProfile: null };
-          const uSnap = await getDoc(doc(db, "users", otherUid));
-          return { ...conv, otherProfile: uSnap.exists() ? (uSnap.data() as UserProfile) : null };
-        })
-      );
-      setConvs(enriched);
-      setLoading(false);
-    });
+    const unsub = onSnapshot(
+      q,
+      async (snap) => {
+        try {
+          const docs = snap.docs.map((d) => ({ id: d.id, ...d.data() } as Conversation));
+          const enriched: ConvWithProfile[] = await Promise.allSettled(
+            docs.map(async (conv) => {
+              const otherUid = conv.participants.find((p) => p !== user.uid);
+              if (!otherUid) return { ...conv, otherProfile: null };
+              const uSnap = await getDoc(doc(db, "users", otherUid));
+              return { ...conv, otherProfile: uSnap.exists() ? (uSnap.data() as UserProfile) : null };
+            })
+          ).then((results) =>
+            results
+              .filter((r): r is PromiseFulfilledResult<ConvWithProfile> => r.status === "fulfilled")
+              .map((r) => r.value)
+          );
+          setConvs(enriched);
+        } catch (err) {
+          console.error("Chat list error:", err);
+        } finally {
+          setLoading(false);
+        }
+      },
+      (err) => {
+        console.error("Chat onSnapshot error:", err);
+        toast.error("Failed to load messages.");
+        setLoading(false);
+      }
+    );
 
     return unsub;
   }, [user]);

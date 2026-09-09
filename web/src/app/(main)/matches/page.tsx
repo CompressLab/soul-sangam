@@ -64,6 +64,7 @@ export default function MatchesPage() {
       setItems(enriched);
     } catch (err) {
       console.error(err);
+      toast.error("Failed to load. Please try again.");
     } finally {
       setLoading(false);
     }

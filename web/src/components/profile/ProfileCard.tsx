@@ -96,9 +96,9 @@ export function ProfileCard({ profile }: Props) {
         </div>
         <div className="flex flex-wrap gap-1 mt-1.5">
           {[
-            profile.religion.charAt(0).toUpperCase() + profile.religion.slice(1),
+            profile.religion ? profile.religion.charAt(0).toUpperCase() + profile.religion.slice(1) : null,
             profile.occupation,
-          ].map((tag) => (
+          ].filter(Boolean).map((tag) => (
             <span key={tag} className="text-[10px] bg-primary-50 text-primary-700 px-2 py-0.5 rounded-full">
               {tag}
             </span>

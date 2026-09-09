@@ -37,22 +37,28 @@ export default function ProfileViewInner() {
   useEffect(() => {
     if (!uid) return;
     (async () => {
-      const snap = await getDoc(doc(db, "users", uid));
-      if (snap.exists()) setProfile(snap.data() as UserProfile);
+      try {
+        const snap = await getDoc(doc(db, "users", uid));
+        if (snap.exists()) setProfile(snap.data() as UserProfile);
 
-      if (user && !isOwnProfile) {
-        const outQ = query(collection(db, "interests"), where("fromUid", "==", user.uid), where("toUid", "==", uid));
-        const outSnap = await getDocs(outQ);
-        if (!outSnap.empty) {
-          setInterest({ id: outSnap.docs[0].id, ...outSnap.docs[0].data() } as Interest);
-        } else {
-          const inQ = query(collection(db, "interests"), where("fromUid", "==", uid), where("toUid", "==", user.uid));
-          const inSnap = await getDocs(inQ);
-          if (!inSnap.empty)
-            setInterest({ id: inSnap.docs[0].id, ...inSnap.docs[0].data() } as Interest);
+        if (user && !isOwnProfile) {
+          const outQ = query(collection(db, "interests"), where("fromUid", "==", user.uid), where("toUid", "==", uid));
+          const outSnap = await getDocs(outQ);
+          if (!outSnap.empty) {
+            setInterest({ id: outSnap.docs[0].id, ...outSnap.docs[0].data() } as Interest);
+          } else {
+            const inQ = query(collection(db, "interests"), where("fromUid", "==", uid), where("toUid", "==", user.uid));
+            const inSnap = await getDocs(inQ);
+            if (!inSnap.empty)
+              setInterest({ id: inSnap.docs[0].id, ...inSnap.docs[0].data() } as Interest);
+          }
         }
+      } catch (err) {
+        console.error("ProfileView load error:", err);
+        toast.error("Failed to load profile. Please try again.");
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     })();
   }, [uid, user, isOwnProfile]);
 
@@ -72,23 +78,31 @@ export default function ProfileViewInner() {
 
   async function respond(status: "accepted" | "declined") {
     if (!interest) return;
-    await updateDoc(doc(db, "interests", interest.id), { status, updatedAt: Date.now() });
-    setInterest((p) => p ? { ...p, status } : p);
-    toast.success(status === "accepted" ? "Interest accepted!" : "Declined.");
+    try {
+      await updateDoc(doc(db, "interests", interest.id), { status, updatedAt: Date.now() });
+      setInterest((p) => p ? { ...p, status } : p);
+      toast.success(status === "accepted" ? "Interest accepted!" : "Declined.");
+    } catch {
+      toast.error("Failed to update. Please try again.");
+    }
   }
 
   async function startChat() {
     if (!user || !profile) return;
-    const q    = query(collection(db, "conversations"), where("participants", "array-contains", user.uid));
-    const snap = await getDocs(q);
-    const existing = snap.docs.find((d) => (d.data().participants as string[]).includes(profile.uid));
-    if (existing) { router.push(`/chat/conversation?id=${existing.id}`); return; }
-    const now = Date.now();
-    const ref = await addDoc(collection(db, "conversations"), {
-      participants: [user.uid, profile.uid], lastMessage: "", lastMessageAt: now,
-      unreadCount: { [user.uid]: 0, [profile.uid]: 0 },
-    });
-    router.push(`/chat/conversation?id=${ref.id}`);
+    try {
+      const q    = query(collection(db, "conversations"), where("participants", "array-contains", user.uid));
+      const snap = await getDocs(q);
+      const existing = snap.docs.find((d) => (d.data().participants as string[]).includes(profile.uid));
+      if (existing) { router.push(`/chat/conversation?id=${existing.id}`); return; }
+      const now = Date.now();
+      const ref = await addDoc(collection(db, "conversations"), {
+        participants: [user.uid, profile.uid], lastMessage: "", lastMessageAt: now,
+        unreadCount: { [user.uid]: 0, [profile.uid]: 0 },
+      });
+      router.push(`/chat/conversation?id=${ref.id}`);
+    } catch {
+      toast.error("Failed to start chat. Please try again.");
+    }
   }
 
   if (!uid) return (

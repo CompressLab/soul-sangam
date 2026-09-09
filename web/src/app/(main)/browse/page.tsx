@@ -93,7 +93,7 @@ export default function BrowsePage() {
   // Client-side city filter (avoid extra Firestore index for MVP)
   const displayed = searchCity
     ? profiles.filter((p) =>
-        p.location.city.toLowerCase().includes(searchCity.toLowerCase())
+        p.location?.city?.toLowerCase().includes(searchCity.toLowerCase()) ?? false
       )
     : profiles;
 

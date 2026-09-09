@@ -8,6 +8,7 @@ import { doc, setDoc } from "firebase/firestore";
 import { db } from "@shared/firebase/config";
 import { uploadToCloudinary } from "@shared/utils/cloudinary";
 import { useAuth } from "@/context/AuthContext";
+import { useRequireAuth } from "@/hooks/useRequireAuth";
 import { calcAge } from "@shared/utils/age";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
@@ -47,6 +48,7 @@ const STEPS = ["Personal", "Location & Career", "About Me", "Preferences", "Phot
 // ── Component ──────────────────────────────────────────────────────────────
 
 export default function ProfileSetupPage() {
+  useRequireAuth();
   const { user } = useAuth();
   const router   = useRouter();
   const [step, setStep]       = useState(0);

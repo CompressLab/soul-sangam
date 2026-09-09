@@ -12,6 +12,28 @@ import { auth, db, googleProvider, facebookProvider } from "@shared/firebase/con
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 
+// Firebase error codes that should be silently ignored (user-initiated cancel)
+const SILENT_AUTH_CODES = new Set([
+  "auth/popup-closed-by-user",
+  "auth/cancelled-popup-request",
+  "auth/user-cancelled",
+]);
+
+// Map Firebase error codes to friendly messages
+function friendlyAuthError(err: unknown): string | null {
+  const code = (err as { code?: string })?.code;
+  if (!code) return err instanceof Error ? err.message : null;
+  if (SILENT_AUTH_CODES.has(code)) return null; // return null = silent
+  const messages: Record<string, string> = {
+    "auth/network-request-failed": "Network error. Please check your connection.",
+    "auth/too-many-requests":      "Too many attempts. Please try again later.",
+    "auth/user-disabled":          "This account has been disabled.",
+    "auth/account-exists-with-different-credential":
+      "An account already exists with this email. Try a different sign-in method.",
+  };
+  return messages[code] ?? "Sign-in failed. Please try again.";
+}
+
 interface AuthContextValue {
   user:             User | null;
   loading:          boolean;
@@ -33,9 +55,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       setUser(firebaseUser);
       if (firebaseUser) {
-        // Check if user has a profile document
-        const snap = await getDoc(doc(db, "users", firebaseUser.uid));
-        setProfileComplete(snap.exists() && !!snap.data()?.profileComplete);
+        try {
+          const snap = await getDoc(doc(db, "users", firebaseUser.uid));
+          setProfileComplete(snap.exists() && !!snap.data()?.profileComplete);
+        } catch {
+          setProfileComplete(false);
+        }
       } else {
         setProfileComplete(false);
       }
@@ -44,7 +69,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return unsubscribe;
   }, []);
 
-  /** Create a stub user doc on first sign-in */
   async function ensureUserDoc(firebaseUser: User) {
     const ref  = doc(db, "users", firebaseUser.uid);
     const snap = await getDoc(ref);
@@ -69,11 +93,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const result = await signInWithPopup(auth, googleProvider);
       await ensureUserDoc(result.user);
-      toast.success(`Welcome, ${result.user.displayName}!`);
+      toast.success(`Welcome, ${result.user.displayName ?? ""}!`);
       router.push("/browse");
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Google sign-in failed";
-      toast.error(msg);
+      const msg = friendlyAuthError(err);
+      if (msg) toast.error(msg);
     }
   }
 
@@ -81,30 +105,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const result = await signInWithPopup(auth, facebookProvider);
       await ensureUserDoc(result.user);
-      toast.success(`Welcome, ${result.user.displayName}!`);
+      toast.success(`Welcome, ${result.user.displayName ?? ""}!`);
       router.push("/browse");
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Facebook sign-in failed";
-      toast.error(msg);
+      const msg = friendlyAuthError(err);
+      if (msg) toast.error(msg);
     }
   }
 
   async function logout() {
-    await signOut(auth);
-    router.push("/");
-    toast.success("Signed out successfully.");
+    try {
+      await signOut(auth);
+      router.push("/");
+      toast.success("Signed out successfully.");
+    } catch {
+      toast.error("Failed to sign out. Please try again.");
+    }
   }
 
   return (
     <AuthContext.Provider
-      value={{
-        user,
-        loading,
-        profileComplete,
-        signInWithGoogle,
-        signInWithFacebook,
-        logout,
-      }}
+      value={{ user, loading, profileComplete, signInWithGoogle, signInWithFacebook, logout }}
     >
       {children}
     </AuthContext.Provider>
