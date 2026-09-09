@@ -6,11 +6,6 @@ const repoRoot  = path.resolve(__dirname, "..");
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Static export — generates web/out/ with a proper index.html
-  // Required for Firebase Hosting free tier (no SSR)
-  output: "export",
-  trailingSlash: true,
-
   webpack(config) {
     config.resolve.alias = {
       ...config.resolve.alias,
@@ -24,7 +19,6 @@ const nextConfig = {
   },
 
   images: {
-    unoptimized: true, // required for static export
     remotePatterns: [
       { protocol: "https", hostname: "firebasestorage.googleapis.com" },
       { protocol: "https", hostname: "lh3.googleusercontent.com" },
