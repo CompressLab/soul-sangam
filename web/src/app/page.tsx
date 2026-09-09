@@ -32,7 +32,7 @@ const features = [
 const testimonials = [
   {
     name: "Fatima & Yusuf",
-    text: "We found each other through Nikkah Connect within 3 months. Simple, safe and effective.",
+    text: "We found each other through Soul Sangam within 3 months. Simple, safe and effective.",
     location: "London, UK",
   },
   {
@@ -62,7 +62,7 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
           <div className="flex items-center gap-1.5">
             <Heart className="text-primary-600" size={22} fill="currentColor" />
-            <span className="font-bold text-primary-700 text-lg">Nikkah Connect</span>
+            <span className="font-bold text-primary-700 text-lg">Soul Sangam</span>
           </div>
           <Link href="/login" className="btn-primary text-xs px-4 py-2">
             Sign In
@@ -124,7 +124,7 @@ export default function LandingPage() {
       <section className="py-20 px-4">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900">Why Nikkah Connect?</h2>
+            <h2 className="text-3xl font-bold text-gray-900">Why Soul Sangam?</h2>
             <p className="text-gray-500 mt-2">Everything you need to find the right person</p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -173,7 +173,7 @@ export default function LandingPage() {
             Ready to start your journey?
           </h2>
           <p className="text-gray-500 mb-8">
-            Join thousands of families who have found happiness through Nikkah Connect.
+            Join thousands of families who have found happiness through Soul Sangam.
           </p>
           <button
             onClick={signInWithGoogle}
@@ -186,7 +186,7 @@ export default function LandingPage() {
       </section>
 
       <footer className="border-t border-gray-100 py-8 px-4 text-center text-xs text-gray-400">
-        © {new Date().getFullYear()} Nikkah Connect. All rights reserved.
+        © {new Date().getFullYear()} Soul Sangam. All rights reserved.
       </footer>
     </div>
   );

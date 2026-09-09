@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Nikkah Connect",
-    "slug": "nikkah-connect",
+    "name": "Soul Sangam",
+    "slug": "soul-sangam",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -41,8 +41,8 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "Allow Nikkah Connect to access your photos.",
-          "cameraPermission": "Allow Nikkah Connect to use your camera."
+          "photosPermission": "Allow Soul Sangam to access your photos.",
+          "cameraPermission": "Allow Soul Sangam to use your camera."
         }
       ]
     ],

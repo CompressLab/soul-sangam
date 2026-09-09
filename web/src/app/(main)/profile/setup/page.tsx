@@ -139,7 +139,7 @@ export default function ProfileSetupPage() {
         verified:        false,
       });
 
-      toast.success("Profile created! Welcome to Nikkah Connect 🎉");
+      toast.success("Profile created! Welcome to Soul Sangam 🎉");
       router.push("/browse");
     } catch (err) {
       console.error(err);

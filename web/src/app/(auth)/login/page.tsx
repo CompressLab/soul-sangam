@@ -19,7 +19,7 @@ export default function LoginPage() {
         {/* Logo */}
         <div className="flex items-center gap-2">
           <Heart className="text-primary-600" size={32} fill="currentColor" />
-          <span className="text-2xl font-bold text-primary-700">Nikkah Connect</span>
+          <span className="text-2xl font-bold text-primary-700">Soul Sangam</span>
         </div>
 
         <div className="text-center">
