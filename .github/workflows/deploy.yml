@@ -22,16 +22,13 @@ jobs:
             package-lock.json
             web/package-lock.json
 
-      # Install root deps (provides firebase to shared/)
       - name: Install root dependencies
         run: npm install --ignore-scripts
 
-      # Install web deps
       - name: Install web dependencies
         working-directory: web
         run: npm ci --ignore-scripts
 
-      # Write secrets to .env.local
       - name: Create .env.local
         working-directory: web
         run: |
@@ -47,12 +44,16 @@ jobs:
           NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET=${{ secrets.CLOUDINARY_UPLOAD_PRESET }}
           EOF
 
-      # Build Next.js
-      - name: Build Next.js app
+      - name: Build Next.js app (static export)
         working-directory: web
         run: npm run build
 
-      # Deploy to Firebase Hosting
+      - name: Verify build output exists
+        run: |
+          echo "--- web/out contents ---"
+          ls -la web/out/ || echo "web/out does not exist!"
+          test -f web/out/index.html && echo "✓ index.html confirmed" || (echo "✗ index.html missing from web/out" && exit 1)
+
       - name: Deploy to Firebase Hosting
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
