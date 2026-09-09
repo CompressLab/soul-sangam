@@ -6,6 +6,9 @@ const repoRoot  = path.resolve(__dirname, "..");
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: "export",      // static export — no Cloud Functions needed
+  trailingSlash: true,   // generates /chat/[convId]/index.html
+
   webpack(config) {
     config.resolve.alias = {
       ...config.resolve.alias,
@@ -19,8 +22,8 @@ const nextConfig = {
   },
 
   images: {
+    unoptimized: true, // required for static export
     remotePatterns: [
-      { protocol: "https", hostname: "firebasestorage.googleapis.com" },
       { protocol: "https", hostname: "lh3.googleusercontent.com" },
       { protocol: "https", hostname: "graph.facebook.com" },
       { protocol: "https", hostname: "platform-lookaside.fbsbx.com" },
