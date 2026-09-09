@@ -93,39 +93,45 @@ export default function ConversationInner() {
   const otherPhoto = otherProfile?.photos?.[0] ?? otherProfile?.photoURL;
 
   if (!convId) return (
-    <div className="text-center py-20 text-gray-400">
-      <p>No conversation selected.</p>
+    <div className="text-center py-24">
+      <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-100 to-violet-100 flex items-center justify-center mx-auto mb-4">
+        <span className="text-2xl">💬</span>
+      </div>
+      <p className="font-bold text-slate-700">No conversation selected.</p>
       <Link href="/chat" className="btn-primary mt-4 inline-flex">Back to Messages</Link>
     </div>
   );
 
   return (
     <div className="max-w-2xl mx-auto flex flex-col h-[calc(100vh-8rem)]">
-      <div className="card px-4 py-3 flex items-center gap-3 mb-3 flex-shrink-0">
+      {/* Header */}
+      <div className="card-gradient px-4 py-3 flex items-center gap-3 mb-3 flex-shrink-0 shadow-card">
         <button onClick={() => router.back()} className="btn-ghost p-1.5">
           <ArrowLeft size={18} />
         </button>
-        <div className="relative w-9 h-9 rounded-full overflow-hidden bg-gray-100 flex-shrink-0">
+        <div className="relative w-10 h-10 rounded-2xl overflow-hidden bg-gradient-to-br from-primary-100 to-violet-100 flex-shrink-0 shadow-sm">
           {otherPhoto
             ? <Image src={otherPhoto} alt={otherProfile?.displayName ?? ""} fill className="object-cover" unoptimized />
             : <div className="w-full h-full flex items-center justify-center text-lg">👤</div>}
         </div>
         <div>
-          <p className="font-semibold text-sm text-gray-900">{otherProfile?.displayName ?? "…"}</p>
-          <p className="text-xs text-gray-500">{otherProfile?.location?.city}</p>
+          <p className="font-bold text-sm text-slate-900">{otherProfile?.displayName ?? "…"}</p>
+          <p className="text-xs text-slate-500">{otherProfile?.location?.city}</p>
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto space-y-3 px-1 pb-4">
+      {/* Messages */}
+      <div className="flex-1 overflow-y-auto space-y-3 px-1 pb-4 scrollbar-hide">
         {messages.map((msg) => {
           const isMine = msg.senderUid === user?.uid;
           return (
             <div key={msg.id} className={`flex ${isMine ? "justify-end" : "justify-start"}`}>
-              <div className={`max-w-[75%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed
-                ${isMine ? "bg-primary-600 text-white rounded-br-sm"
-                : "bg-white border border-gray-100 text-gray-800 rounded-bl-sm shadow-sm"}`}>
+              <div className={`max-w-[75%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed shadow-sm
+                ${isMine
+                  ? "bg-gradient-to-br from-primary-600 to-violet-600 text-white rounded-br-sm"
+                  : "bg-white border border-slate-100 text-slate-800 rounded-bl-sm"}`}>
                 <p>{msg.text}</p>
-                <p className={`text-[10px] mt-1 ${isMine ? "text-primary-200" : "text-gray-400"}`}>
+                <p className={`text-[10px] mt-1 ${isMine ? "text-white/60" : "text-slate-400"}`}>
                   {formatDistanceToNow(new Date(msg.createdAt), { addSuffix: true })}
                 </p>
               </div>
@@ -133,21 +139,21 @@ export default function ConversationInner() {
           );
         })}
         {messages.length === 0 && (
-          <div className="text-center py-10 text-gray-400 text-sm">
+          <div className="text-center py-10 text-slate-400 text-sm">
             Say hello to {otherProfile?.displayName ?? "your match"}! 👋
           </div>
         )}
         <div ref={bottomRef} />
       </div>
 
-      <form onSubmit={sendMessage} className="card px-4 py-3 flex gap-3 items-center flex-shrink-0">
+      <form onSubmit={sendMessage} className="card-gradient px-4 py-3 flex gap-3 items-center flex-shrink-0 shadow-card">
         <input
-          className="input flex-1" placeholder="Type a message…"
+          className="input flex-1 bg-slate-50" placeholder="Type a message…"
           value={text} onChange={(e) => setText(e.target.value)}
           disabled={sending} autoComplete="off"
         />
         <button type="submit" disabled={!text.trim() || sending}
-          className="btn-primary rounded-full w-10 h-10 p-0 flex items-center justify-center flex-shrink-0">
+          className="bg-gradient-to-br from-primary-600 to-violet-600 text-white rounded-xl w-10 h-10 p-0 flex items-center justify-center flex-shrink-0 shadow-glow hover:shadow-glow-lg hover:-translate-y-0.5 transition-all duration-200 disabled:opacity-40 disabled:transform-none">
           <Send size={16} />
         </button>
       </form>

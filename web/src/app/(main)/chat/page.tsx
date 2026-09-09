@@ -68,7 +68,7 @@ export default function ChatListPage() {
     return (
       <div className="max-w-2xl mx-auto space-y-3">
         {[...Array(5)].map((_, i) => (
-          <div key={i} className="card h-20 animate-pulse bg-gray-100" />
+          <div key={i} className="rounded-2xl h-20 animate-pulse bg-gradient-to-br from-slate-100 to-slate-200" />
         ))}
       </div>
     );
@@ -76,14 +76,19 @@ export default function ChatListPage() {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Messages</h1>
+      <div className="mb-6">
+        <h1 className="text-2xl font-extrabold text-slate-900">Messages</h1>
+        <p className="text-sm text-slate-500 mt-1">Your private conversations</p>
+      </div>
 
       {convs.length === 0 ? (
-        <div className="text-center py-20 text-gray-400">
-          <MessageCircle size={40} className="mx-auto mb-3 text-gray-200" />
-          <p className="font-medium">No conversations yet</p>
-          <p className="text-sm mt-1">Accept or receive an interest to start chatting</p>
-          <Link href="/matches" className="btn-primary mt-4 inline-flex text-sm">
+        <div className="text-center py-24">
+          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-100 to-violet-100 flex items-center justify-center mx-auto mb-4">
+            <MessageCircle size={28} className="text-primary-400" />
+          </div>
+          <p className="font-bold text-slate-700">No conversations yet</p>
+          <p className="text-sm text-slate-400 mt-1">Accept or receive an interest to start chatting</p>
+          <Link href="/matches" className="btn-primary mt-5 inline-flex text-sm">
             View Matches
           </Link>
         </div>
@@ -98,16 +103,16 @@ export default function ChatListPage() {
               <Link
                 key={conv.id}
                 href={`/chat/conversation?id=${conv.id}`}
-                className="card p-4 flex items-center gap-4 hover:shadow-md transition"
+                className="card-gradient p-4 flex items-center gap-4 hover:shadow-lift hover:-translate-y-0.5 transition-all duration-200 block"
               >
-                <div className="relative flex-shrink-0 w-12 h-12 rounded-full overflow-hidden bg-gray-100">
+                <div className="relative flex-shrink-0 w-12 h-12 rounded-2xl overflow-hidden bg-gradient-to-br from-primary-100 to-violet-100 shadow-sm">
                   {photo ? (
-                    <Image src={photo} alt={p?.displayName ?? ""} fill className="object-cover" />
+                    <Image src={photo} alt={p?.displayName ?? ""} fill className="object-cover" unoptimized />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-xl">👤</div>
                   )}
                   {unread > 0 && (
-                    <span className="absolute -top-0.5 -right-0.5 bg-primary-600 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
+                    <span className="absolute -top-1 -right-1 bg-gradient-to-br from-primary-500 to-violet-500 text-white text-[10px] font-black rounded-full w-5 h-5 flex items-center justify-center shadow-md">
                       {unread}
                     </span>
                   )}
@@ -115,14 +120,14 @@ export default function ChatListPage() {
 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between">
-                    <span className={`font-semibold text-sm truncate ${unread > 0 ? "text-gray-900" : "text-gray-700"}`}>
+                    <span className={`font-bold text-sm truncate ${unread > 0 ? "text-slate-900" : "text-slate-700"}`}>
                       {p?.displayName ?? "Unknown"}
                     </span>
-                    <span className="text-[10px] text-gray-400 flex-shrink-0 ml-2">
+                    <span className="text-[10px] text-slate-400 flex-shrink-0 ml-2">
                       {formatDistanceToNow(new Date(conv.lastMessageAt), { addSuffix: true })}
                     </span>
                   </div>
-                  <p className={`text-xs truncate mt-0.5 ${unread > 0 ? "text-gray-800 font-medium" : "text-gray-500"}`}>
+                  <p className={`text-xs truncate mt-0.5 ${unread > 0 ? "text-slate-800 font-semibold" : "text-slate-400"}`}>
                     {conv.lastMessage || "Say hello!"}
                   </p>
                 </div>
