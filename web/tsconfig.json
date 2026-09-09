@@ -19,7 +19,8 @@
       "@shared/*": ["../shared/*"],
       "@shared/firebase/config": ["../shared/firebase/config.ts"],
       "@shared/types": ["../shared/types/index.ts"],
-      "@shared/utils/age": ["../shared/utils/age.ts"]
+      "@shared/utils/age": ["../shared/utils/age.ts"],
+      "@shared/utils/cloudinary": ["../shared/utils/cloudinary.ts"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

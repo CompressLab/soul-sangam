@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import {
   collection, query, orderBy, onSnapshot,
-  addDoc, doc, getDoc, updateDoc, serverTimestamp,
+  addDoc, doc, getDoc, updateDoc,
 } from "firebase/firestore";
 import { db } from "@shared/firebase/config";
 import { useAuth } from "@/context/AuthContext";

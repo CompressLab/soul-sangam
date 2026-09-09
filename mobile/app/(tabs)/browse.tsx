@@ -45,19 +45,21 @@ export default function BrowseScreen() {
       const constraints: Parameters<typeof query>[1][] = [
         where("profileVisible",  "==", true),
         where("profileComplete", "==", true),
-        where("uid",             "!=", user.uid),
       ];
       if (filters.gender)   constraints.push(where("gender",   "==", filters.gender));
       if (filters.religion) constraints.push(where("religion", "==", filters.religion));
       constraints.push(where("age", ">=", filters.ageMin));
       constraints.push(where("age", "<=", filters.ageMax));
-      constraints.push(orderBy("uid"));
+      constraints.push(orderBy("age"));
       constraints.push(limit(PAGE_SIZE));
       if (!reset && lastDoc) constraints.push(startAfter(lastDoc));
 
       const q    = query(collection(db, "users"), ...constraints);
       const snap = await getDocs(q);
-      const docs = snap.docs.map((d) => d.data() as UserProfile);
+      // Filter current user client-side (avoids illegal multi-field inequality)
+      const docs = snap.docs
+        .map((d) => d.data() as UserProfile)
+        .filter((p) => p.uid !== user.uid);
 
       setProfiles((prev) => reset ? docs : [...prev, ...docs]);
       setLastDoc(snap.docs[snap.docs.length - 1] ?? null);

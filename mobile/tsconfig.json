@@ -7,7 +7,8 @@
       "@shared/*":                  ["../shared/*"],
       "@shared/firebase/config":    ["../shared/firebase/config.ts"],
       "@shared/types":              ["../shared/types/index.ts"],
-      "@shared/utils/age":          ["../shared/utils/age.ts"]
+      "@shared/utils/age":          ["../shared/utils/age.ts"],
+      "@shared/utils/cloudinary":   ["../shared/utils/cloudinary.ts"]
     }
   },
   "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.d.ts", "expo-env.d.ts"]

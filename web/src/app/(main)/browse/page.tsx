@@ -31,7 +31,7 @@ const DEFAULT_FILTERS: Filters = {
 };
 
 export default function BrowsePage() {
-  useRequireAuth();
+  useRequireAuth(true);  // redirect to /profile/setup if profile incomplete
   const { user } = useAuth();
 
   const [profiles,     setProfiles]     = useState<UserProfile[]>([]);
@@ -54,9 +54,11 @@ export default function BrowsePage() {
     try {
       // Build query — we exclude the current user's own profile
       const constraints: Parameters<typeof query>[1][] = [
-        where("profileVisible", "==", true),
+        where("profileVisible",  "==", true),
         where("profileComplete", "==", true),
-        where("uid", "!=", user.uid),
+        // Note: uid != excluded from Firestore query — Firestore does not allow
+        // inequality filters on two different fields (uid + age).
+        // Current user is filtered out client-side below.
       ];
 
       if (filters.gender)   constraints.push(where("gender",   "==", filters.gender));
@@ -65,15 +67,18 @@ export default function BrowsePage() {
 
       constraints.push(where("age", ">=", filters.ageMin));
       constraints.push(where("age", "<=", filters.ageMax));
-      constraints.push(orderBy("uid")); // uid lets us paginate without composite index issues
+      constraints.push(orderBy("age"));
       constraints.push(limit(PAGE_SIZE));
 
       if (!reset && lastDoc) constraints.push(startAfter(lastDoc));
 
-      const q   = query(collection(db, "users"), ...constraints);
+      const q    = query(collection(db, "users"), ...constraints);
       const snap = await getDocs(q);
 
-      const docs = snap.docs.map((d) => d.data() as UserProfile);
+      // Filter out the current user client-side
+      const docs = snap.docs
+        .map((d) => d.data() as UserProfile)
+        .filter((p) => p.uid !== user.uid);
 
       setProfiles((prev) => reset ? docs : [...prev, ...docs]);
       setLastDoc(snap.docs[snap.docs.length - 1] ?? null);
