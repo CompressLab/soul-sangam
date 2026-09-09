@@ -1,4 +1,4 @@
-# Nikkah Connect — Matrimonial Web & Mobile App
+# Soul Sangam — Matrimonial Web & Mobile App
 
 A full-stack matrimonial platform built with **Next.js** (web), **Expo / React Native** (mobile), and **Firebase** (auth, database, storage) — all on the free tier.
 
