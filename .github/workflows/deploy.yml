@@ -55,10 +55,23 @@ jobs:
           echo "NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET=${CLOUDINARY_UPLOAD_PRESET}" >> .env.local
           echo "--- Keys written to .env.local ---"
           cut -d= -f1 .env.local
+          echo "--- Checking values are non-empty ---"
+          while IFS='=' read -r key value; do
+            if [ -z "$value" ]; then
+              echo "WARNING: $key is EMPTY"
+            else
+              echo "OK: $key has a value"
+            fi
+          done < .env.local
 
       - name: Build Next.js app (static export)
         working-directory: web
-        run: npm run build
+        run: |
+          echo "--- .env.local exists check ---"
+          ls -la .env.local
+          echo "--- .env.local line count ---"
+          wc -l .env.local
+          npm run build
 
       - name: Verify build output exists
         run: |
