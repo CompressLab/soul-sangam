@@ -6,6 +6,7 @@ import { db } from "@shared/firebase/config";
 import { useAuth } from "@/context/AuthContext";
 import { useRequireAuth } from "@/hooks/useRequireAuth";
 import type { Conversation, UserProfile } from "@shared/types";
+import toast from "react-hot-toast";
 import { MessageCircle } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
