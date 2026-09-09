@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { X, Download, Smartphone } from "lucide-react";
+import { X, Smartphone } from "lucide-react";
 
-// Update this URL once you upload the APK to GitHub Releases
+// Set this to true and update APK_URL once you've built and uploaded the APK
+// to GitHub Releases (github.com/CompressLab/soul-sangam/releases)
+const APK_READY = false;
 const APK_DOWNLOAD_URL =
   "https://github.com/CompressLab/soul-sangam/releases/latest/download/soul-sangam.apk";
 
@@ -27,13 +29,9 @@ export function MobileAppBanner() {
   const [platform, setPlatform] = useState<Platform>("other");
 
   useEffect(() => {
-    // Only show on mobile browsers
     if (!isMobileBrowser()) return;
-
-    // Don't show if user dismissed it in this session
     const dismissed = sessionStorage.getItem("app-banner-dismissed");
     if (dismissed) return;
-
     setPlatform(detectPlatform());
     setVisible(true);
   }, []);
@@ -50,7 +48,7 @@ export function MobileAppBanner() {
       role="banner"
       aria-label="Install Soul Sangam app"
       className="fixed bottom-0 inset-x-0 z-50 bg-white border-t border-gray-200 shadow-xl
-                 flex items-center gap-3 px-4 py-3 safe-area-pb"
+                 flex items-center gap-3 px-4 py-3"
     >
       {/* App icon */}
       <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-primary-600 flex items-center justify-center shadow-sm">
@@ -61,39 +59,28 @@ export function MobileAppBanner() {
       <div className="flex-1 min-w-0">
         <p className="text-sm font-semibold text-gray-900 truncate">Soul Sangam</p>
         <p className="text-xs text-gray-500">
-          {platform === "ios"
-            ? "Better experience on the app"
-            : "Install the app for the best experience"}
+          {platform === "android" && APK_READY
+            ? "Install the app for the best experience"
+            : platform === "android"
+            ? "Android app coming soon"
+            : platform === "ios"
+            ? "iOS app coming soon"
+            : "Mobile app coming soon"}
         </p>
       </div>
 
-      {/* CTA */}
-      {platform === "android" && (
+      {/* CTA — only show download button when APK is ready */}
+      {platform === "android" && APK_READY && (
         <a
           href={APK_DOWNLOAD_URL}
           download="soul-sangam.apk"
           onClick={dismiss}
           className="flex-shrink-0 flex items-center gap-1.5 bg-primary-600 text-white
                      text-xs font-semibold px-3 py-2 rounded-full shadow-sm
-                     hover:bg-primary-700 transition active:scale-95"
+                     hover:bg-primary-700 transition"
           aria-label="Download Soul Sangam Android app"
         >
-          <Download size={13} />
           Install
-        </a>
-      )}
-
-      {platform === "ios" && (
-        <a
-          href="https://apps.apple.com/app/soul-sangam/YOUR_APP_ID"
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={dismiss}
-          className="flex-shrink-0 bg-black text-white text-xs font-semibold
-                     px-3 py-2 rounded-full shadow-sm hover:bg-gray-800 transition"
-          aria-label="Download Soul Sangam on the App Store"
-        >
-          App Store
         </a>
       )}
 
