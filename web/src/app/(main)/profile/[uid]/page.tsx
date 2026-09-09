@@ -1,7 +1,9 @@
 // Server component wrapper — required for static export with dynamic routes.
-// generateStaticParams returns [] so no pages are pre-built;
-// the actual rendering is done client-side in ProfileViewClient.
+// Actual rendering done client-side in ProfileViewClient.
 import { ProfileViewClient } from "./ProfileViewClient";
+
+export const dynamic = "force-static";
+export const dynamicParams = true;
 
 export function generateStaticParams() {
   return [];
