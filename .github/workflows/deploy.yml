@@ -12,24 +12,28 @@ jobs:
     timeout-minutes: 15
 
     steps:
-      # ── Checkout ────────────────────────────────────────────────────────────
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # ── Node.js ─────────────────────────────────────────────────────────────
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "22"
           cache: "npm"
-          cache-dependency-path: web/package-lock.json
+          cache-dependency-path: |
+            package-lock.json
+            web/package-lock.json
 
-      # ── Install dependencies ────────────────────────────────────────────────
+      # Install root deps first (provides firebase to shared/)
+      - name: Install root dependencies
+        run: npm install --ignore-scripts
+
+      # Install web app deps
       - name: Install web dependencies
         working-directory: web
         run: npm ci --ignore-scripts
 
-      # ── Write .env.local from GitHub Secrets ────────────────────────────────
+      # Write secrets to .env.local
       - name: Create .env.local
         working-directory: web
         run: |
@@ -45,12 +49,10 @@ jobs:
           NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET=${{ secrets.CLOUDINARY_UPLOAD_PRESET }}
           EOF
 
-      # ── Build Next.js ────────────────────────────────────────────────────────
       - name: Build Next.js app
         working-directory: web
         run: npm run build
 
-      # ── Deploy to Firebase Hosting (main branch only) ────────────────────────
       - name: Deploy to Firebase Hosting
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         uses: FirebaseExtended/action-hosting-deploy@v0
