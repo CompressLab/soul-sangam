@@ -5,7 +5,7 @@ import {
   collection, query, where, orderBy,
   limit, getDocs, startAfter, DocumentSnapshot,
 } from "firebase/firestore";
-import { db } from "@shared/firebase/config";
+import { db } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
 import { useRequireAuth } from "@/hooks/useRequireAuth";
 import type { UserProfile } from "@shared/types";

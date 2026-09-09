@@ -7,7 +7,7 @@ import { MapPin, Heart } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { addDoc, collection } from "firebase/firestore";
-import { db } from "@shared/firebase/config";
+import { db } from "@/lib/firebase";
 import toast from "react-hot-toast";
 
 interface Props {

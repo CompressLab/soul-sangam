@@ -5,7 +5,7 @@ import {
   collection, query, where, getDocs,
   addDoc, updateDoc, doc,
 } from "firebase/firestore";
-import { db } from "@shared/firebase/config";
+import { db } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
 import type { Interest, InterestStatus } from "@shared/types";
 import { Heart, Check, X, Clock } from "lucide-react";
