@@ -1,7 +1,10 @@
 "use client";
 
+// Route: /profile/view?uid=USER_ID
+// Uses query param instead of dynamic segment — works with static export.
+
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import {
   doc, getDoc, addDoc, collection,
   query, where, getDocs, updateDoc,
@@ -19,17 +22,18 @@ import Image from "next/image";
 import toast from "react-hot-toast";
 import Link from "next/link";
 
-export function ProfileViewClient() {
+export default function ProfileViewPage() {
   useRequireAuth();
-  const { user }        = useAuth();
-  const { uid }         = useParams<{ uid: string }>();
-  const router          = useRouter();
+  const { user }     = useAuth();
+  const searchParams = useSearchParams();
+  const uid          = searchParams.get("uid");
+  const router       = useRouter();
 
-  const [profile,   setProfile]   = useState<UserProfile | null>(null);
-  const [interest,  setInterest]  = useState<Interest | null>(null);
-  const [loading,   setLoading]   = useState(true);
-  const [sending,   setSending]   = useState(false);
-  const [photoIdx,  setPhotoIdx]  = useState(0);
+  const [profile,  setProfile]  = useState<UserProfile | null>(null);
+  const [interest, setInterest] = useState<Interest | null>(null);
+  const [loading,  setLoading]  = useState(true);
+  const [sending,  setSending]  = useState(false);
+  const [photoIdx, setPhotoIdx] = useState(0);
 
   const isOwnProfile = user?.uid === uid;
 
@@ -75,7 +79,7 @@ export function ProfileViewClient() {
       setInterest({ id: ref.id, fromUid: user.uid, toUid: profile.uid,
         status: "pending", createdAt: now, updatedAt: now });
       toast.success(`Interest sent to ${profile.displayName}!`);
-    } catch { toast.error("Failed to send interest. Try again."); }
+    } catch { toast.error("Failed to send interest."); }
     finally { setSending(false); }
   }
 
@@ -91,14 +95,20 @@ export function ProfileViewClient() {
     const q    = query(collection(db, "conversations"), where("participants", "array-contains", user.uid));
     const snap = await getDocs(q);
     const existing = snap.docs.find((d) => (d.data().participants as string[]).includes(profile.uid));
-    if (existing) { router.push(`/chat/${existing.id}`); return; }
+    if (existing) { router.push(`/chat/conversation?id=${existing.id}`); return; }
     const now = Date.now();
     const ref = await addDoc(collection(db, "conversations"), {
       participants: [user.uid, profile.uid], lastMessage: "", lastMessageAt: now,
       unreadCount: { [user.uid]: 0, [profile.uid]: 0 },
     });
-    router.push(`/chat/${ref.id}`);
+    router.push(`/chat/conversation?id=${ref.id}`);
   }
+
+  if (!uid) return (
+    <div className="text-center py-20 text-gray-400">
+      <Link href="/browse" className="btn-primary inline-flex">Browse Profiles</Link>
+    </div>
+  );
 
   if (loading) return (
     <div className="max-w-3xl mx-auto animate-pulse space-y-4">
@@ -125,14 +135,11 @@ export function ProfileViewClient() {
       </button>
 
       <div className="grid md:grid-cols-5 gap-6">
-        {/* Photos */}
         <div className="md:col-span-2 space-y-2">
           <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-gray-100">
-            {photos.length > 0 ? (
-              <Image src={photos[photoIdx]} alt={profile.displayName} fill className="object-cover" unoptimized />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-gray-300 text-6xl">👤</div>
-            )}
+            {photos.length > 0
+              ? <Image src={photos[photoIdx]} alt={profile.displayName} fill className="object-cover" unoptimized />
+              : <div className="w-full h-full flex items-center justify-center text-gray-300 text-6xl">👤</div>}
           </div>
           {photos.length > 1 && (
             <div className="flex gap-1.5 overflow-x-auto pb-1">
@@ -147,7 +154,6 @@ export function ProfileViewClient() {
           )}
         </div>
 
-        {/* Details */}
         <div className="md:col-span-3 space-y-5">
           <div>
             <div className="flex items-start justify-between">
@@ -164,7 +170,8 @@ export function ProfileViewClient() {
               )}
             </div>
             <div className="flex flex-wrap gap-2 mt-3">
-              {[profile.religion.charAt(0).toUpperCase() + profile.religion.slice(1), profile.caste, profile.motherTongue, profile.nationality]
+              {[profile.religion.charAt(0).toUpperCase() + profile.religion.slice(1),
+                profile.caste, profile.motherTongue, profile.nationality]
                 .filter(Boolean).map((tag) => (
                   <span key={tag} className="bg-primary-50 text-primary-700 text-xs font-medium px-2.5 py-1 rounded-full">{tag}</span>
                 ))}
@@ -185,7 +192,7 @@ export function ProfileViewClient() {
 
           {profile.hobbies?.length > 0 && (
             <div>
-              <h3 className="text-sm font-semibold text-gray-700 mb-2">Hobbies & Interests</h3>
+              <h3 className="text-sm font-semibold text-gray-700 mb-2">Hobbies</h3>
               <div className="flex flex-wrap gap-2">
                 {profile.hobbies.map((h) => (
                   <span key={h} className="bg-gray-100 text-gray-700 text-xs px-2.5 py-1 rounded-full">{h}</span>
@@ -194,7 +201,6 @@ export function ProfileViewClient() {
             </div>
           )}
 
-          {/* Actions */}
           {!isOwnProfile && (
             <div className="flex gap-3 pt-2">
               {!interest && (
@@ -203,7 +209,6 @@ export function ProfileViewClient() {
                   {sending ? "Sending…" : "Send Interest"}
                 </button>
               )}
-
               {interest && isOutgoing && (
                 <div className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold
                   ${interest.status === "accepted" ? "bg-green-100 text-green-700"
@@ -214,7 +219,6 @@ export function ProfileViewClient() {
                   {interest.status === "pending"  && <><Clock size={14} /> Interest Sent</>}
                 </div>
               )}
-
               {interest && isIncoming && interest.status === "pending" && (
                 <div className="flex gap-2">
                   <button onClick={() => respond("accepted")}
@@ -227,7 +231,6 @@ export function ProfileViewClient() {
                   </button>
                 </div>
               )}
-
               {interest?.status === "accepted" && (
                 <button onClick={startChat} className="btn-outline">
                   <MessageCircle size={15} /> Message
@@ -235,7 +238,6 @@ export function ProfileViewClient() {
               )}
             </div>
           )}
-
           {isOwnProfile && (
             <Link href="/profile/edit" className="btn-outline inline-flex">Edit Profile</Link>
           )}

@@ -1,7 +1,10 @@
 "use client";
 
+// Route: /chat/conversation?id=CONV_ID
+// Uses query param instead of dynamic segment — works with static export.
+
 import { useEffect, useRef, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import {
   collection, query, orderBy, onSnapshot,
   addDoc, doc, getDoc, updateDoc,
@@ -13,12 +16,14 @@ import type { Message, Conversation, UserProfile } from "@shared/types";
 import { ArrowLeft, Send } from "lucide-react";
 import Image from "next/image";
 import { formatDistanceToNow } from "date-fns";
+import Link from "next/link";
 
-export function ConversationClient() {
+export default function ConversationPage() {
   useRequireAuth();
-  const { user }   = useAuth();
-  const { convId } = useParams<{ convId: string }>();
-  const router     = useRouter();
+  const { user }      = useAuth();
+  const searchParams  = useSearchParams();
+  const convId        = searchParams.get("id");
+  const router        = useRouter();
 
   const [messages,     setMessages]     = useState<Message[]>([]);
   const [conv,         setConv]         = useState<Conversation | null>(null);
@@ -82,6 +87,13 @@ export function ConversationClient() {
 
   const otherPhoto = otherProfile?.photos?.[0] ?? otherProfile?.photoURL;
 
+  if (!convId) return (
+    <div className="text-center py-20 text-gray-400">
+      <p>No conversation selected.</p>
+      <Link href="/chat" className="btn-primary mt-4 inline-flex">Back to Messages</Link>
+    </div>
+  );
+
   return (
     <div className="max-w-2xl mx-auto flex flex-col h-[calc(100vh-8rem)]">
       {/* Header */}
@@ -92,12 +104,11 @@ export function ConversationClient() {
         <div className="relative w-9 h-9 rounded-full overflow-hidden bg-gray-100 flex-shrink-0">
           {otherPhoto
             ? <Image src={otherPhoto} alt={otherProfile?.displayName ?? ""} fill className="object-cover" unoptimized />
-            : <div className="w-full h-full flex items-center justify-center text-lg">👤</div>
-          }
+            : <div className="w-full h-full flex items-center justify-center text-lg">👤</div>}
         </div>
         <div>
           <p className="font-semibold text-sm text-gray-900">{otherProfile?.displayName ?? "…"}</p>
-          <p className="text-xs text-gray-500">{otherProfile?.location.city}</p>
+          <p className="text-xs text-gray-500">{otherProfile?.location?.city}</p>
         </div>
       </div>
 
@@ -108,8 +119,9 @@ export function ConversationClient() {
           return (
             <div key={msg.id} className={`flex ${isMine ? "justify-end" : "justify-start"}`}>
               <div className={`max-w-[75%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed
-                ${isMine ? "bg-primary-600 text-white rounded-br-sm"
-                : "bg-white border border-gray-100 text-gray-800 rounded-bl-sm shadow-sm"}`}>
+                ${isMine
+                  ? "bg-primary-600 text-white rounded-br-sm"
+                  : "bg-white border border-gray-100 text-gray-800 rounded-bl-sm shadow-sm"}`}>
                 <p>{msg.text}</p>
                 <p className={`text-[10px] mt-1 ${isMine ? "text-primary-200" : "text-gray-400"}`}>
                   {formatDistanceToNow(new Date(msg.createdAt), { addSuffix: true })}

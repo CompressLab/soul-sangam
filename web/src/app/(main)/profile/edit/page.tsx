@@ -98,7 +98,7 @@ export default function EditProfilePage() {
         updatedAt: Date.now(),
       });
       toast.success("Profile updated!");
-      router.push(`/profile/${user.uid}`);
+      router.push(`/profile/view?uid=${user.uid}`);
     } catch {
       toast.error("Failed to save. Please try again.");
     } finally {

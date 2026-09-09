@@ -40,7 +40,7 @@ export function ProfileCard({ profile }: Props) {
 
   return (
     <Link
-      href={`/profile/${profile.uid}`}
+      href={`/profile/view?uid=${profile.uid}`}
       className="card group overflow-hidden hover:shadow-md transition-shadow block"
     >
       {/* Photo */}

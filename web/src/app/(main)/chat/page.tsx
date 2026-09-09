@@ -79,7 +79,7 @@ export default function ChatListPage() {
             return (
               <Link
                 key={conv.id}
-                href={`/chat/${conv.id}`}
+                href={`/chat/conversation?id=${conv.id}`}
                 className="card p-4 flex items-center gap-4 hover:shadow-md transition"
               >
                 <div className="relative flex-shrink-0 w-12 h-12 rounded-full overflow-hidden bg-gray-100">

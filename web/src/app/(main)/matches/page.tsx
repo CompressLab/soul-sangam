@@ -165,7 +165,7 @@ function InterestCard({
 
   return (
     <div className="card p-4 flex items-center gap-4">
-      <Link href={`/profile/${profile.uid}`} className="flex-shrink-0">
+      <Link href={`/profile/view?uid=${profile.uid}`} className="flex-shrink-0">
         <div className="relative w-16 h-16 rounded-full overflow-hidden bg-gray-100">
           {photo ? (
             <Image src={photo} alt={profile.displayName} fill className="object-cover" />
@@ -176,7 +176,7 @@ function InterestCard({
       </Link>
 
       <div className="flex-1 min-w-0">
-        <Link href={`/profile/${profile.uid}`} className="font-semibold text-gray-900 hover:text-primary-600 truncate block">
+        <Link href={`/profile/view?uid=${profile.uid}`} className="font-semibold text-gray-900 hover:text-primary-600 truncate block">
           {profile.displayName}
         </Link>
         <p className="text-xs text-gray-500">

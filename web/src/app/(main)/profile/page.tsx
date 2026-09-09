@@ -10,7 +10,7 @@ export default function MyProfileRedirect() {
   const router   = useRouter();
 
   useEffect(() => {
-    if (user) router.replace(`/profile/${user.uid}`);
+    if (user) router.replace(`/profile/view?uid=${user.uid}`);
   }, [user, router]);
 
   return null;
