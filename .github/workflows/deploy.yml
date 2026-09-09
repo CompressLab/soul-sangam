@@ -20,21 +20,20 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "22"
           cache: "npm"
           cache-dependency-path: web/package-lock.json
 
       # ── Install dependencies ────────────────────────────────────────────────
       - name: Install web dependencies
         working-directory: web
-        run: npm ci
+        run: npm ci --ignore-scripts
 
       # ── Write .env.local from GitHub Secrets ────────────────────────────────
-      # Secrets are set in: GitHub repo → Settings → Secrets → Actions
       - name: Create .env.local
         working-directory: web
         run: |
-          cat > .env.local << EOF
+          cat > .env.local << 'EOF'
           NEXT_PUBLIC_FIREBASE_API_KEY=${{ secrets.FIREBASE_API_KEY }}
           NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=${{ secrets.FIREBASE_AUTH_DOMAIN }}
           NEXT_PUBLIC_FIREBASE_PROJECT_ID=${{ secrets.FIREBASE_PROJECT_ID }}
