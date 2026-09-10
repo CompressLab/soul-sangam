@@ -178,6 +178,7 @@ export default function ProfileViewInner() {
   const isIncoming = interest?.fromUid === uid;
 
   return (
+    <>
     <div className="max-w-3xl mx-auto">
       <button onClick={() => router.back()} className="btn-ghost mb-4">
         <ArrowLeft size={16} /> Back
@@ -347,6 +348,7 @@ export default function ProfileViewInner() {
         </div>
       </div>
     )}
+    </>
   );
 }
 
