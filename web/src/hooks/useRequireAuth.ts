@@ -6,7 +6,7 @@ import { useAuth } from "@/context/AuthContext";
 
 /**
  * Redirects to /login if not authenticated.
- * Optionally redirects to /profile/setup if profile is incomplete.
+ * If requireProfile=true, redirects to /profile/setup when profileComplete is false.
  */
 export function useRequireAuth(requireProfile = false) {
   const { user, loading, profileComplete } = useAuth();

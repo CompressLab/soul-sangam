@@ -31,7 +31,7 @@ const DEFAULT_FILTERS: Filters = {
 };
 
 export default function BrowsePage() {
-  useRequireAuth(true);  // redirect to /profile/setup if profile incomplete
+  useRequireAuth();  // just check auth, don't enforce profile completion on browse
   const { user } = useAuth();
 
   const [profiles,     setProfiles]     = useState<UserProfile[]>([]);

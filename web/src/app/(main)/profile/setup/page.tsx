@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -52,8 +52,13 @@ const STEPS = ["Personal", "Location & Career", "About Me", "Preferences", "Phot
 
 export default function ProfileSetupPage() {
   useRequireAuth();
-  const { user } = useAuth();
-  const router   = useRouter();
+  const { user, refreshProfile, profileComplete } = useAuth();
+  const router = useRouter();
+
+  // If profile is already complete, skip setup and go to browse
+  useEffect(() => {
+    if (profileComplete) router.replace("/browse");
+  }, [profileComplete, router]);
 
   const [step,       setStep]      = useState(0);
   const [photos,     setPhotos]    = useState<File[]>([]);
@@ -135,8 +140,7 @@ export default function ProfileSetupPage() {
       }
 
       // 3. Save profile to Firestore
-      setSaveStage("Saving your profile…");
-      const age = calcAge(data.dateOfBirth);
+      setSaveStage("Saving your profile…");      const age = calcAge(data.dateOfBirth);
 
       // Build income string
       const incomeStr = data.incomeAmount && data.incomeCurrency
@@ -183,6 +187,8 @@ export default function ProfileSetupPage() {
       );
 
       toast.success("Profile created! Welcome to Soul Sangam 🎉");
+      // Refresh profileComplete in context so useRequireAuth stops redirecting to setup
+      await refreshProfile();
       router.push("/browse");
     } catch (err: unknown) {
       console.error("Profile save error:", err);
