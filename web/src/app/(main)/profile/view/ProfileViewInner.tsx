@@ -11,6 +11,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useRequireAuth } from "@/hooks/useRequireAuth";
 import type { UserProfile, Interest } from "@shared/types";
 import { formatHeight } from "@shared/utils/age";
+import { ga } from "@/lib/analytics";
 import {
   Heart, MessageCircle, MapPin, Briefcase,
   BookOpen, ArrowLeft, Check, X, Clock,
@@ -39,7 +40,11 @@ export default function ProfileViewInner() {
     (async () => {
       try {
         const snap = await getDoc(doc(db, "users", uid));
-        if (snap.exists()) setProfile(snap.data() as UserProfile);
+        if (snap.exists()) {
+          setProfile(snap.data() as UserProfile);
+          // Track profile view
+          if (!isOwnProfile) ga.profileViewed(uid ?? "");
+        }
 
         if (user && !isOwnProfile) {
           const outQ = query(collection(db, "interests"), where("fromUid", "==", user.uid), where("toUid", "==", uid));
@@ -71,6 +76,7 @@ export default function ProfileViewInner() {
         fromUid: user.uid, toUid: profile.uid, status: "pending", createdAt: now, updatedAt: now,
       });
       setInterest({ id: ref.id, fromUid: user.uid, toUid: profile.uid, status: "pending", createdAt: now, updatedAt: now });
+      ga.interestSent(profile.uid);
       toast.success(`Interest sent to ${profile.displayName}!`);
     } catch { toast.error("Failed to send interest."); }
     finally { setSending(false); }

@@ -12,6 +12,7 @@ import { GEO_DATA, CURRENCIES } from "@/lib/geoData";
 import { useAuth } from "@/context/AuthContext";
 import { useRequireAuth } from "@/hooks/useRequireAuth";
 import { calcAge } from "@shared/utils/age";
+import { ga } from "@/lib/analytics";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { Camera, ChevronRight, ChevronLeft, Check, Loader2 } from "lucide-react";
@@ -187,6 +188,7 @@ export default function ProfileSetupPage() {
       );
 
       toast.success("Profile created! Welcome to Familiara 🎉");
+      ga.profileCreated();
       // Refresh profileComplete in context so useRequireAuth stops redirecting to setup
       await refreshProfile();
       router.push("/browse");

@@ -11,6 +11,7 @@ import { doc, getDoc, setDoc } from "firebase/firestore";
 import { auth, db, googleProvider, facebookProvider } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import { ga } from "@/lib/analytics";
 
 const SILENT_AUTH_CODES = new Set([
   "auth/popup-closed-by-user",
@@ -104,6 +105,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const result = await signInWithPopup(auth, googleProvider);
       ensureUserDoc(result.user).catch((e) => console.error("ensureUserDoc failed:", e));
+      ga.signIn("google");
       toast.success(`Welcome, ${result.user.displayName ?? ""}!`);
       router.push("/browse");
     } catch (err: unknown) {
@@ -116,6 +118,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const result = await signInWithPopup(auth, facebookProvider);
       ensureUserDoc(result.user).catch((e) => console.error("ensureUserDoc failed:", e));
+      ga.signIn("facebook");
       toast.success(`Welcome, ${result.user.displayName ?? ""}!`);
       router.push("/browse");
     } catch (err: unknown) {
