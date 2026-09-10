@@ -39,7 +39,7 @@ const features = [
 const testimonials = [
   {
     name: "Ayesha & Zayan",
-    text: "Soul Sangam felt completely different — elegant, private and purposeful. We found each other within weeks.",
+    text: "Familiara felt completely different — elegant, private and purposeful. We found each other within weeks.",
     location: "London, UK",
     rating: 5,
   },
@@ -81,7 +81,7 @@ export default function LandingPage() {
             <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-primary-600 to-violet-600 flex items-center justify-center shadow-md">
               <Heart size={16} className="text-white" fill="white" />
             </div>
-            <span className="font-bold text-lg gradient-text">Soul Sangam</span>
+            <span className="font-bold text-lg gradient-text">Familiara</span>
           </div>
           <button
             onClick={signInWithGoogle}
@@ -179,7 +179,7 @@ export default function LandingPage() {
           <div className="text-center mb-16">
             <div className="inline-flex items-center gap-2 bg-primary-50 border border-primary-100 rounded-full px-4 py-1.5 text-xs font-semibold text-primary-700 mb-4">
               <Sparkles size={12} />
-              WHY SOUL SANGAM
+              WHY Familiara
             </div>
             <h2 className="text-3xl md:text-5xl font-extrabold text-slate-900 mb-4">
               Built different,{" "}
@@ -259,7 +259,7 @@ export default function LandingPage() {
               Real stories,{" "}
               <span className="bg-gradient-to-r from-gold-400 to-yellow-300 bg-clip-text text-transparent">real happiness</span>
             </h2>
-            <p className="text-white/60 text-lg">Families brought together through Soul Sangam</p>
+            <p className="text-white/60 text-lg">Families brought together through Familiara</p>
           </div>
           <div className="grid md:grid-cols-3 gap-6">
             {testimonials.map(({ name, text, location, rating }) => (
@@ -296,7 +296,7 @@ export default function LandingPage() {
               Your story begins <span className="gradient-text">here</span>
             </h2>
             <p className="text-slate-500 mb-8 text-lg leading-relaxed">
-              Join thousands of families who chose Soul Sangam for a search that's dignified, private, and meaningful.
+              Join thousands of families who chose Familiara for a search that's dignified, private, and meaningful.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <button onClick={signInWithGoogle} className="btn-primary px-8 py-3 text-base">
@@ -319,10 +319,10 @@ export default function LandingPage() {
             <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-primary-600 to-violet-600 flex items-center justify-center">
               <Heart size={14} className="text-white" fill="white" />
             </div>
-            <span className="font-bold gradient-text">Soul Sangam</span>
+            <span className="font-bold gradient-text">Familiara</span>
           </div>
           <p className="text-xs text-slate-400">
-            © {new Date().getFullYear()} Soul Sangam. All rights reserved.
+            © {new Date().getFullYear()} Familiara. All rights reserved.
           </p>
           <div className="flex gap-6 text-xs text-slate-400">
             <a href="/terms"   className="hover:text-primary-600 transition-colors">Terms</a>

@@ -19,7 +19,7 @@ if (typeof window !== "undefined") {
     .map(([k]) => k);
   if (missing.length > 0) {
     console.error(
-      `[Soul Sangam] Firebase config is missing values for: ${missing.join(", ")}. ` +
+      `[Familiara] Firebase config is missing values for: ${missing.join(", ")}. ` +
       `Check NEXT_PUBLIC_FIREBASE_* environment variables.`
     );
   }

@@ -8,7 +8,7 @@ import { MobileAppBanner } from "@/components/ui/MobileAppBanner";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title:       "Soul Sangam — Find Your Match",
+  title:       "Familiara — Find Your Match",
   description: "A trusted matrimonial platform to help you find your life partner.",
 };
 

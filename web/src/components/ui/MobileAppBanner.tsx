@@ -4,10 +4,10 @@ import { useEffect, useState } from "react";
 import { X, Smartphone } from "lucide-react";
 
 // Set this to true and update APK_URL once you've built and uploaded the APK
-// to GitHub Releases (github.com/CompressLab/soul-sangam/releases)
+// to GitHub Releases (github.com/CompressLab/familiara/releases)
 const APK_READY = false;
 const APK_DOWNLOAD_URL =
-  "https://github.com/CompressLab/soul-sangam/releases/latest/download/soul-sangam.apk";
+  "https://github.com/CompressLab/familiara/releases/latest/download/familiara.apk";
 
 type Platform = "android" | "ios" | "other";
 
@@ -46,7 +46,7 @@ export function MobileAppBanner() {
   return (
     <div
       role="banner"
-      aria-label="Install Soul Sangam app"
+      aria-label="Install Familiara app"
       className="fixed bottom-0 inset-x-0 z-50 bg-white border-t border-gray-200 shadow-xl
                  flex items-center gap-3 px-4 py-3"
     >
@@ -57,7 +57,7 @@ export function MobileAppBanner() {
 
       {/* Text */}
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-semibold text-gray-900 truncate">Soul Sangam</p>
+        <p className="text-sm font-semibold text-gray-900 truncate">Familiara</p>
         <p className="text-xs text-gray-500">
           {platform === "android" && APK_READY
             ? "Install the app for the best experience"
@@ -73,12 +73,12 @@ export function MobileAppBanner() {
       {platform === "android" && APK_READY && (
         <a
           href={APK_DOWNLOAD_URL}
-          download="soul-sangam.apk"
+          download="familiara.apk"
           onClick={dismiss}
           className="flex-shrink-0 flex items-center gap-1.5 bg-primary-600 text-white
                      text-xs font-semibold px-3 py-2 rounded-full shadow-sm
                      hover:bg-primary-700 transition"
-          aria-label="Download Soul Sangam Android app"
+          aria-label="Download Familiara Android app"
         >
           Install
         </a>

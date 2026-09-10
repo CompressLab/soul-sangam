@@ -16,7 +16,7 @@ export default function LoginScreen() {
         {/* Hero */}
         <View style={styles.hero}>
           <Text style={styles.logo}>💑</Text>
-          <Text style={styles.appName}>Soul Sangam</Text>
+          <Text style={styles.appName}>Familiara</Text>
           <Text style={styles.tagline}>Find your perfect life partner</Text>
           <Text style={styles.sub}>
             Join thousands of families who have found happiness through our trusted platform.

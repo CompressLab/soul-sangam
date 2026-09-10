@@ -186,7 +186,7 @@ export default function ProfileSetupPage() {
         { merge: true }  // merge:true — won't fail if doc already exists
       );
 
-      toast.success("Profile created! Welcome to Soul Sangam 🎉");
+      toast.success("Profile created! Welcome to Familiara 🎉");
       // Refresh profileComplete in context so useRequireAuth stops redirecting to setup
       await refreshProfile();
       router.push("/browse");

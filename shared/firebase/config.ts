@@ -14,7 +14,7 @@ if (typeof window !== "undefined") {
   for (const key of required) {
     if (!process.env[key]) {
       console.error(
-        `[Soul Sangam] Missing environment variable: ${key}. ` +
+        `[Familiara] Missing environment variable: ${key}. ` +
         `Check your .env.local file and rebuild.`
       );
     }

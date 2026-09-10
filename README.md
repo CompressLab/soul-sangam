@@ -1,4 +1,4 @@
-# Soul Sangam — Matrimonial Web & Mobile App
+# Familiara — Matrimonial Web & Mobile App
 
 A full-stack matrimonial platform built with **Next.js** (web), **Expo / React Native** (mobile), and **Firebase** (auth, database, storage) — all on the free tier.
 
@@ -82,8 +82,8 @@ matrimonial-app/
 > Everything is on the **free Spark plan** — no billing required for testing.
 
 1. Go to [console.firebase.google.com](https://console.firebase.google.com) and click **Add project**.
-2. Give it a name (e.g. `nikkah-connect`). Disable Google Analytics if you prefer.
-3. Once created, note the **Project ID** (e.g. `nikkah-connect-12345`).
+2. Give it a name (e.g. `familiara`). Disable Google Analytics if you prefer.
+3. Once created, note the **Project ID** (e.g. `familiara-12345`).
 
 ### Enable Authentication
 
@@ -117,7 +117,7 @@ matrimonial-app/
 ### Get Your Web Config
 
 1. Firebase console → **Project Settings** (gear icon) → **Your apps** → **Add app** → Web (`</>`).
-2. Register the app (name it `nikkah-connect-web`).
+2. Register the app (name it `familiara-web`).
 3. Copy the config object — you'll need it next.
 
 ---
@@ -159,9 +159,9 @@ Open `matrimonial-app/mobile/app.json` and fill in the `extra` block:
 ```json
 "extra": {
   "firebaseApiKey":            "AIza...",
-  "firebaseAuthDomain":        "nikkah-connect-12345.firebaseapp.com",
-  "firebaseProjectId":         "nikkah-connect-12345",
-  "firebaseStorageBucket":     "nikkah-connect-12345.appspot.com",
+  "firebaseAuthDomain":        "familiara-12345.firebaseapp.com",
+  "firebaseProjectId":         "familiara-12345",
+  "firebaseStorageBucket":     "familiara-12345.appspot.com",
   "firebaseMessagingSenderId": "123456789",
   "firebaseAppId":             "1:123456789:web:abc123",
   "googleWebClientId":         "123456789-xxxx.apps.googleusercontent.com"
@@ -174,12 +174,12 @@ Open `matrimonial-app/mobile/app.json` and fill in the `extra` block:
 
 **Google Sign-In (Android)**
 1. In Firebase console → Project Settings → Your apps → Add app → Android.
-2. Use package name `com.nikkahconnect.app`.
+2. Use package name `com.familiara.app`.
 3. Download `google-services.json` and place it at `mobile/google-services.json`.
 
 **Google Sign-In (iOS)**
 1. In Firebase console → Add app → iOS.
-2. Use bundle ID `com.nikkahconnect.app`.
+2. Use bundle ID `com.familiara.app`.
 3. Download `GoogleService-Info.plist` and place it at `mobile/GoogleService-Info.plist`.
 4. Add the reversed client ID from that file to `app.json` under `ios.infoPlist.CFBundleURLTypes`.
 
@@ -189,7 +189,7 @@ Open `matrimonial-app/mobile/app.json` and fill in the `extra` block:
    ```json
    "facebookScheme": "fbYOUR_APP_ID",
    "facebookAppId":  "YOUR_APP_ID",
-   "facebookDisplayName": "Nikkah Connect"
+   "facebookDisplayName": "Familiara"
    ```
 
 ### Install & Run the Mobile App

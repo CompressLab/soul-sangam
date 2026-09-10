@@ -27,7 +27,7 @@ export default function LoginPage() {
             <div className="w-9 h-9 rounded-xl bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center">
               <Heart size={18} className="text-white" fill="white" />
             </div>
-            <span className="text-white font-bold text-xl">Soul Sangam</span>
+            <span className="text-white font-bold text-xl">Familiara</span>
           </div>
         </div>
 
@@ -61,7 +61,7 @@ export default function LoginPage() {
         </div>
 
         <p className="relative z-10 text-white/40 text-xs">
-          © {new Date().getFullYear()} Soul Sangam
+          © {new Date().getFullYear()} Familiara
         </p>
       </div>
 
@@ -73,7 +73,7 @@ export default function LoginPage() {
             <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary-600 to-violet-600 flex items-center justify-center shadow-glow">
               <Heart size={18} className="text-white" fill="white" />
             </div>
-            <span className="font-bold text-xl gradient-text">Soul Sangam</span>
+            <span className="font-bold text-xl gradient-text">Familiara</span>
           </div>
 
           <div className="card p-8 shadow-lift">

@@ -29,7 +29,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
             <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-primary-600 to-violet-600 flex items-center justify-center shadow-md">
               <Heart size={14} className="text-white" fill="white" />
             </div>
-            <span className="font-bold gradient-text text-lg">Soul Sangam</span>
+            <span className="font-bold gradient-text text-lg">Familiara</span>
           </Link>
 
           {/* Desktop nav */}
