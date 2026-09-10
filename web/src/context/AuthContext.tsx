@@ -92,7 +92,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   async function signInWithGoogle() {
     try {
       const result = await signInWithPopup(auth, googleProvider);
-      await ensureUserDoc(result.user);
+      // Sign-in succeeded — create user doc silently (don't block on it)
+      ensureUserDoc(result.user).catch((e) => console.error("ensureUserDoc failed:", e));
       toast.success(`Welcome, ${result.user.displayName ?? ""}!`);
       router.push("/browse");
     } catch (err: unknown) {
@@ -104,7 +105,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   async function signInWithFacebook() {
     try {
       const result = await signInWithPopup(auth, facebookProvider);
-      await ensureUserDoc(result.user);
+      // Sign-in succeeded — create user doc silently (don't block on it)
+      ensureUserDoc(result.user).catch((e) => console.error("ensureUserDoc failed:", e));
       toast.success(`Welcome, ${result.user.displayName ?? ""}!`);
       router.push("/browse");
     } catch (err: unknown) {
