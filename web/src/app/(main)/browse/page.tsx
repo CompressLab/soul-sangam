@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import {
-  collection, query, where, orderBy,
+  collection, query, where,
   limit, getDocs, startAfter, DocumentSnapshot,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
@@ -56,18 +56,13 @@ export default function BrowsePage() {
       const constraints: Parameters<typeof query>[1][] = [
         where("profileVisible",  "==", true),
         where("profileComplete", "==", true),
-        // Note: uid != excluded from Firestore query — Firestore does not allow
-        // inequality filters on two different fields (uid + age).
-        // Current user is filtered out client-side below.
+        // Age range and ordering done client-side to avoid composite index requirement
       ];
 
       if (filters.gender)   constraints.push(where("gender",   "==", filters.gender));
       if (filters.religion) constraints.push(where("religion", "==", filters.religion));
       if (filters.country)  constraints.push(where("location.country", "==", filters.country));
 
-      constraints.push(where("age", ">=", filters.ageMin));
-      constraints.push(where("age", "<=", filters.ageMax));
-      constraints.push(orderBy("age"));
       constraints.push(limit(PAGE_SIZE));
 
       if (!reset && lastDoc) constraints.push(startAfter(lastDoc));
@@ -75,10 +70,14 @@ export default function BrowsePage() {
       const q    = query(collection(db, "users"), ...constraints);
       const snap = await getDocs(q);
 
-      // Filter out the current user client-side
+      // Filter client-side: exclude current user, apply age range
       const docs = snap.docs
         .map((d) => d.data() as UserProfile)
-        .filter((p) => p.uid !== user.uid);
+        .filter((p) =>
+          p.uid !== user.uid &&
+          (p.age ?? 0) >= filters.ageMin &&
+          (p.age ?? 99) <= filters.ageMax
+        );
 
       setProfiles((prev) => reset ? docs : [...prev, ...docs]);
       setLastDoc(snap.docs[snap.docs.length - 1] ?? null);
