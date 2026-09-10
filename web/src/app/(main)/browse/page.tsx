@@ -82,7 +82,6 @@ export default function BrowsePage() {
 
       console.log(`[Browse] after client filter: ${docs.length} profiles`);
       setProfiles((prev) => reset ? docs : [...prev, ...docs]);
-      setLastDoc(snap.docs[snap.docs.length - 1] ?? null);
       setHasMore(snap.docs.length === PAGE_SIZE);
     } catch (err) {
       console.error("Browse query error:", err);
