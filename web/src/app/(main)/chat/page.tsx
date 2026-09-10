@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { collection, query, where, onSnapshot, orderBy, doc, getDoc } from "firebase/firestore";
+import { collection, query, where, onSnapshot, doc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
 import { useRequireAuth } from "@/hooks/useRequireAuth";
@@ -24,10 +24,11 @@ export default function ChatListPage() {
 
   useEffect(() => {
     if (!user) return;
+    // Note: orderBy removed — requires a composite index that isn't deployed yet.
+    // Sorting is done client-side after fetch instead.
     const q = query(
       collection(db, "conversations"),
-      where("participants", "array-contains", user.uid),
-      orderBy("lastMessageAt", "desc")
+      where("participants", "array-contains", user.uid)
     );
 
     const unsub = onSnapshot(
@@ -47,6 +48,8 @@ export default function ChatListPage() {
               .filter((r): r is PromiseFulfilledResult<ConvWithProfile> => r.status === "fulfilled")
               .map((r) => r.value)
           );
+          // Sort client-side by most recent message
+          enriched.sort((a, b) => (b.lastMessageAt ?? 0) - (a.lastMessageAt ?? 0));
           setConvs(enriched);
         } catch (err) {
           console.error("Chat list error:", err);
@@ -56,7 +59,11 @@ export default function ChatListPage() {
       },
       (err) => {
         console.error("Chat onSnapshot error:", err);
-        toast.error("Failed to load messages.");
+        // Only show toast for permission errors, not missing index errors
+        const code = (err as { code?: string })?.code;
+        if (code === "permission-denied") {
+          toast.error("Unable to load messages. Please try again.");
+        }
         setLoading(false);
       }
     );
