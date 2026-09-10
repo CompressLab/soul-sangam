@@ -17,6 +17,7 @@ import toast from "react-hot-toast";
 import { Camera, ChevronRight, ChevronLeft, Check, Loader2 } from "lucide-react";
 import Image from "next/image";
 import type { Religion, MaritalStatus, Gender } from "@shared/types";
+import { FloatingSymbols } from "@/components/ui/FloatingSymbols";
 
 // ── Schema ─────────────────────────────────────────────────────────────────
 
@@ -194,9 +195,11 @@ export default function ProfileSetupPage() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="max-w-2xl mx-auto relative">
+      {/* Animated floating symbols */}
+      <FloatingSymbols count={20} />
       {/* Progress stepper */}
-      <div className="mb-8">
+      <div className="mb-8 relative z-10">
         <div className="flex items-center mb-3">
           {STEPS.map((label, i) => (
             <div key={label} className="flex items-center flex-1 last:flex-none">
@@ -216,7 +219,7 @@ export default function ProfileSetupPage() {
         <p className="text-sm font-semibold gradient-text">{STEPS[step]}</p>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit(onSubmit)} className="relative z-10">
         <div className="card-gradient p-6 space-y-5 shadow-card">
 
           {/* ── Step 0: Personal ─────────────────────────────────────── */}
