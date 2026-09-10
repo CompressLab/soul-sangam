@@ -152,6 +152,8 @@ export default function ProfileViewInner() {
       setDeleting(false);
     }
   }
+
+  if (!uid) return (
     <div className="text-center py-20 text-gray-400">
       <Link href="/browse" className="btn-primary inline-flex">Browse Profiles</Link>
     </div>
