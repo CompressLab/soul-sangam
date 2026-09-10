@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import {
   doc, getDoc, addDoc, collection,
-  query, where, getDocs, updateDoc,
+  query, where, getDocs, updateDoc, deleteDoc, writeBatch,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
@@ -15,6 +15,7 @@ import { ga } from "@/lib/analytics";
 import {
   Heart, MessageCircle, MapPin, Briefcase,
   BookOpen, ArrowLeft, Check, X, Clock,
+  Trash2, AlertTriangle, Loader2,
 } from "lucide-react";
 import Image from "next/image";
 import toast from "react-hot-toast";
@@ -22,16 +23,18 @@ import Link from "next/link";
 
 export default function ProfileViewInner() {
   useRequireAuth();
-  const { user }     = useAuth();
+  const { user, logout } = useAuth();
   const searchParams = useSearchParams();
   const uid          = searchParams.get("uid");
   const router       = useRouter();
 
-  const [profile,  setProfile]  = useState<UserProfile | null>(null);
-  const [interest, setInterest] = useState<Interest | null>(null);
-  const [loading,  setLoading]  = useState(true);
-  const [sending,  setSending]  = useState(false);
-  const [photoIdx, setPhotoIdx] = useState(0);
+  const [profile,      setProfile]      = useState<UserProfile | null>(null);
+  const [interest,     setInterest]     = useState<Interest | null>(null);
+  const [loading,      setLoading]      = useState(true);
+  const [sending,      setSending]      = useState(false);
+  const [photoIdx,     setPhotoIdx]     = useState(0);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleting,     setDeleting]     = useState(false);
 
   const isOwnProfile = user?.uid === uid;
 
@@ -111,7 +114,44 @@ export default function ProfileViewInner() {
     }
   }
 
-  if (!uid) return (
+  async function deleteProfile() {
+    if (!user) return;
+    setDeleting(true);
+    try {
+      const batch = writeBatch(db);
+
+      // 1. Delete the user document
+      batch.delete(doc(db, "users", user.uid));
+
+      // 2. Delete all interests sent by this user
+      const sentSnap = await getDocs(
+        query(collection(db, "interests"), where("fromUid", "==", user.uid))
+      );
+      sentSnap.docs.forEach((d) => batch.delete(d.ref));
+
+      // 3. Delete all interests received by this user
+      const receivedSnap = await getDocs(
+        query(collection(db, "interests"), where("toUid", "==", user.uid))
+      );
+      receivedSnap.docs.forEach((d) => batch.delete(d.ref));
+
+      // 4. Delete all conversations this user is part of
+      const convsSnap = await getDocs(
+        query(collection(db, "conversations"), where("participants", "array-contains", user.uid))
+      );
+      convsSnap.docs.forEach((d) => batch.delete(d.ref));
+
+      // Commit all deletes atomically
+      await batch.commit();
+
+      toast.success("Your profile has been deleted.");
+      await logout();
+    } catch (err) {
+      console.error("Delete profile error:", err);
+      toast.error("Failed to delete profile. Please try again.");
+      setDeleting(false);
+    }
+  }
     <div className="text-center py-20 text-gray-400">
       <Link href="/browse" className="btn-primary inline-flex">Browse Profiles</Link>
     </div>
@@ -234,11 +274,77 @@ export default function ProfileViewInner() {
             </div>
           )}
           {isOwnProfile && (
-            <Link href="/profile/edit" className="btn-outline inline-flex">Edit Profile</Link>
+            <div className="flex gap-3 pt-2 flex-wrap">
+              <Link href="/profile/edit" className="btn-outline inline-flex">Edit Profile</Link>
+              <button
+                onClick={() => setShowDeleteModal(true)}
+                className="inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold
+                           border border-red-200 text-red-600 bg-red-50
+                           hover:bg-red-100 hover:border-red-300 transition-all duration-200"
+              >
+                <Trash2 size={14} /> Delete Profile
+              </button>
+            </div>
           )}
         </div>
       </div>
     </div>
+
+    {/* ── Delete confirmation modal ─────────────────────────── */}
+    {showDeleteModal && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+        <div className="card w-full max-w-md p-6 shadow-lift">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-12 h-12 rounded-2xl bg-red-100 flex items-center justify-center flex-shrink-0">
+              <AlertTriangle size={24} className="text-red-500" />
+            </div>
+            <div>
+              <h3 className="text-lg font-bold text-slate-900">Delete Profile</h3>
+              <p className="text-sm text-slate-500">This cannot be undone</p>
+            </div>
+          </div>
+
+          <p className="text-sm text-slate-600 leading-relaxed mb-4">
+            Are you sure you want to permanently delete your Familiara profile? This will remove:
+          </p>
+          <ul className="space-y-2 mb-6">
+            {[
+              "Your profile and all personal information",
+              "All interests sent and received",
+              "All conversations and messages",
+            ].map((item) => (
+              <li key={item} className="flex items-start gap-2 text-sm text-slate-600">
+                <X size={13} className="text-red-400 flex-shrink-0 mt-0.5" />
+                {item}
+              </li>
+            ))}
+          </ul>
+
+          <div className="flex gap-3">
+            <button
+              onClick={() => setShowDeleteModal(false)}
+              disabled={deleting}
+              className="btn-outline flex-1"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={deleteProfile}
+              disabled={deleting}
+              className="flex-1 flex items-center justify-center gap-2 rounded-full px-5 py-2.5
+                         text-sm font-semibold text-white bg-red-500
+                         hover:bg-red-600 transition-all duration-200
+                         disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {deleting
+                ? <><Loader2 size={14} className="animate-spin" /> Deleting…</>
+                : <><Trash2 size={14} /> Yes, Delete</>
+              }
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
   );
 }
 
