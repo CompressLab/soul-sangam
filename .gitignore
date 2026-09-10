@@ -22,9 +22,10 @@ node_modules/
 .pnp
 .pnp.js
 
-# ── Next.js build output ─────────────────────────────────────────────────────
+# ── Next.js ───────────────────────────────────────────────────────────────────
 web/.next/
 web/out/
+web/next-env.d.ts
 
 # ── Expo / React Native ───────────────────────────────────────────────────────
 mobile/.expo/
@@ -38,6 +39,10 @@ mobile/node_modules/
 firebase-debug.log
 firebase-debug.*.log
 .firebaserc.local
+
+# ── Test / temp files ─────────────────────────────────────────────────────────
+trigger.txt
+*.tmp
 
 # ── OS files ──────────────────────────────────────────────────────────────────
 .DS_Store
