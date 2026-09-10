@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import {
   collection, query, where,
-  limit, getDocs, startAfter, DocumentSnapshot,
+  limit, getDocs,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
@@ -36,7 +36,6 @@ export default function BrowsePage() {
 
   const [profiles,     setProfiles]     = useState<UserProfile[]>([]);
   const [loading,      setLoading]      = useState(true);
-  const [lastDoc,      setLastDoc]      = useState<DocumentSnapshot | null>(null);
   const [hasMore,      setHasMore]      = useState(true);
   const [filters,      setFilters]      = useState<Filters>(DEFAULT_FILTERS);
   const [showFilters,  setShowFilters]  = useState(false);
@@ -52,33 +51,36 @@ export default function BrowsePage() {
     setLoading(true);
 
     try {
-      // Build query — we exclude the current user's own profile
-      const constraints: Parameters<typeof query>[1][] = [
-        where("profileVisible",  "==", true),
+      // Simplified query — fetch all complete visible profiles, filter client-side
+      const q = query(
+        collection(db, "users"),
         where("profileComplete", "==", true),
-        // Age range and ordering done client-side to avoid composite index requirement
-      ];
+        limit(PAGE_SIZE)
+      );
 
-      if (filters.gender)   constraints.push(where("gender",   "==", filters.gender));
-      if (filters.religion) constraints.push(where("religion", "==", filters.religion));
-      if (filters.country)  constraints.push(where("location.country", "==", filters.country));
-
-      constraints.push(limit(PAGE_SIZE));
-
-      if (!reset && lastDoc) constraints.push(startAfter(lastDoc));
-
-      const q    = query(collection(db, "users"), ...constraints);
       const snap = await getDocs(q);
+      console.log(`[Browse] Firestore returned ${snap.docs.length} docs`);
 
-      // Filter client-side: exclude current user, apply age range
       const docs = snap.docs
-        .map((d) => d.data() as UserProfile)
-        .filter((p) =>
-          p.uid !== user.uid &&
-          (p.age ?? 0) >= filters.ageMin &&
-          (p.age ?? 99) <= filters.ageMax
-        );
+        .map((d) => {
+          const data = d.data() as UserProfile;
+          console.log(`[Browse] doc uid=${data.uid} visible=${data.profileVisible} complete=${data.profileComplete} age=${data.age}`);
+          return data;
+        })
+        .filter((p) => {
+          const keep =
+            p.uid !== user.uid &&
+            p.profileVisible !== false &&
+            (!filters.gender   || p.gender   === filters.gender) &&
+            (!filters.religion || p.religion === filters.religion) &&
+            (!filters.country  || p.location?.country === filters.country) &&
+            (p.age ?? 0) >= filters.ageMin &&
+            (p.age ?? 99) <= filters.ageMax;
+          if (!keep) console.log(`[Browse] filtered out uid=${p.uid}`);
+          return keep;
+        });
 
+      console.log(`[Browse] after client filter: ${docs.length} profiles`);
       setProfiles((prev) => reset ? docs : [...prev, ...docs]);
       setLastDoc(snap.docs[snap.docs.length - 1] ?? null);
       setHasMore(snap.docs.length === PAGE_SIZE);
